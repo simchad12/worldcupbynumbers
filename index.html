@@ -195,23 +195,6 @@ nav{background:var(--navy);position:sticky;top:0;z-index:200;padding:0 1rem}
 /* CHART */
 .chart-wrap{position:relative;height:300px}
 .chart-note{font-size:.73rem;color:var(--muted);text-align:center;margin-top:.5rem}
-/* CLUB FORM */
-.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-.fc{background:#fff;border-radius:10px;border:1px solid var(--border);padding:1.1rem}
-.fc-top{display:flex;align-items:center;gap:.65rem;margin-bottom:.85rem}
-.fc-name{font-weight:700;font-size:.9rem}
-.fc-club{font-size:.78rem;color:var(--muted)}
-.form-bar-row{margin-bottom:.5rem}
-.form-bar-label{font-size:.72rem;color:var(--muted);margin-bottom:.2rem;display:flex;justify-content:space-between}
-.form-bar-label span:last-child{font-weight:700;color:var(--text)}
-.fb-wrap{background:var(--border);border-radius:4px;height:8px}
-.fb-fill{height:100%;border-radius:4px;transition:width .4s}
-.fb-club{background:var(--blue)}
-.fb-int{background:var(--red)}
-.form-verdict{margin-top:.75rem;font-size:.75rem;padding:.3rem .6rem;border-radius:4px;display:inline-block;font-weight:600}
-.fv-green{background:#F0FDF4;color:#166534}
-.fv-amber{background:#FFFBEB;color:#92400E}
-.fv-red{background:#FFF1F2;color:#9F1239}
 /* FOOTER */
 footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:2rem 1rem;font-size:.82rem;margin-top:4rem}
 footer strong{color:rgba(255,255,255,.85)}
@@ -301,8 +284,7 @@ footer strong{color:rgba(255,255,255,.85)}
       <li><a onclick="navigate('home')" data-page="home" class="active">Home</a></li>
       <li><a onclick="navigate('groups')" data-page="groups">Groups</a></li>
       <li><a onclick="navigate('teams')" data-page="teams">Team Stats</a></li>
-      <li><a onclick="navigate('players')" data-page="players">Players</a></li>
-      <li><a onclick="navigate('form')" data-page="form">Club Form</a></li>
+      <li><a onclick="navigate('players')" data-page="players">Players to Watch</a></li>
       <li><a onclick="navigate('insights')" data-page="insights">Insights</a></li>
       <li><a onclick="navigate('predictor')" data-page="predictor">Predictor</a></li>
       <li><a onclick="navigate('livestats')" data-page="livestats">🔴 Live Stats</a></li>
@@ -367,7 +349,7 @@ footer strong{color:rgba(255,255,255,.85)}
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Winner Probability — Top Contenders</div>
         <div class="chart-wrap"><canvas id="winnerChart"></canvas></div>
-        <p class="chart-note">Based on Elo ratings, squad strength & historical tournament data</p>
+        <p class="chart-note"><strong>Methodology:</strong> Elo rating (40%) · Qualification xG differential (25%) · Squad age profile — 24–28 peak (20%) · Tournament experience of starting XI (15%)</p>
       </div>
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Goals Per Match — Tournament History</div>
@@ -545,21 +527,6 @@ footer strong{color:rgba(255,255,255,.85)}
   </div>
 </section>
 
-<!-- CLUB FORM -->
-<section class="section" id="form">
-  <div class="container pb-3">
-    <div class="sec-hdr">
-      <div class="sec-label">Club vs Country Form</div>
-      <h2 class="sec-title">Arriving In Form — Or Out Of It?</h2>
-      <p class="sec-desc">Which players arrive at the World Cup riding club form — and which ones are coasting on reputation? Club rating = last 10 appearances. International rating = last 5 caps.</p>
-    </div>
-    <div class="insight-box" style="margin-bottom:1.75rem">
-      <div class="ilabel">Economics Angle</div>
-      <p>There's a structural misalignment of incentives here. Clubs have a financial interest in protecting their most valuable assets before a major tournament. The result: elite players often arrive having been rested, managed, or played through minor knocks. The data below tracks who is genuinely match-sharp vs. who's been wrapped in cotton wool.</p>
-    </div>
-    <div class="form-grid" id="formGrid"></div>
-  </div>
-</section>
 
 <!-- INSIGHTS -->
 <section class="section" id="insights">
@@ -691,6 +658,16 @@ footer strong{color:rgba(255,255,255,.85)}
 
     <!-- TEAM STATS -->
     <div id="tab-teamstats" style="display:none">
+      <!-- LIVE: 2026 tournament stats from API -->
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.75rem">⚡ 2026 Tournament — Live</div>
+      <div class="table-wrap" style="margin-bottom:2rem">
+        <table class="data-table">
+          <thead id="liveTeamStatsHead"></thead>
+          <tbody id="liveTeamStatsBody"></tbody>
+        </table>
+      </div>
+      <!-- LOCAL: derived from hardcoded RESULTS (includes cards) -->
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:.75rem;margin-top:1.5rem">📋 Full Tournament Stats (inc. cards)</div>
       <div class="table-wrap">
         <table class="data-table">
           <thead id="teamStatsHead"></thead>
@@ -1179,26 +1156,6 @@ const PLAYERS = [
   {name:'Martin Ødegaard',flag:'🇳🇴',country:'Norway',pos:'midfielder',goals:12,assists:18,caps:70,age:27,insight:'The creative brain behind Norway\'s tournament bid. His partnership with Haaland — the vision and the finisher — is one of the most dangerous combinations at this World Cup.'},
 ];
 
-const FORM_DATA = [
-  {name:'Kylian Mbappé',flag:'🇫🇷',club:'Real Madrid',clubRating:88,intRating:91},
-  {name:'Jude Bellingham',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',club:'Real Madrid',clubRating:85,intRating:87},
-  {name:'Vinicius Jr.',flag:'🇧🇷',club:'Real Madrid',clubRating:90,intRating:84},
-  {name:'Pedri',flag:'🇪🇸',club:'Barcelona',clubRating:82,intRating:88},
-  {name:'Lionel Messi',flag:'🇦🇷',club:'Inter Miami',clubRating:71,intRating:85},
-  {name:'Cristiano Ronaldo',flag:'🇵🇹',club:'Al-Nassr',clubRating:74,intRating:79},
-  {name:'Erling Haaland',flag:'🇳🇴',club:'Man City',clubRating:91,intRating:88},
-  {name:'Jamal Musiala',flag:'🇩🇪',club:'Bayern Munich',clubRating:88,intRating:83},
-  {name:'Bukayo Saka',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',club:'Arsenal',clubRating:86,intRating:87},
-  {name:'Bruno Fernandes',flag:'🇵🇹',club:'Man United',clubRating:78,intRating:84},
-  {name:'Rodrigo De Paul',flag:'🇦🇷',club:'Atletico Madrid',clubRating:80,intRating:86},
-  {name:'Gavi',flag:'🇪🇸',club:'Barcelona',clubRating:83,intRating:85},
-  {name:'Sadio Mané',flag:'🇸🇳',club:'Al-Nassr',clubRating:73,intRating:82},
-  {name:'Achraf Hakimi',flag:'🇲🇦',club:'PSG',clubRating:84,intRating:81},
-  {name:'Raphinha',flag:'🇧🇷',club:'Barcelona',clubRating:87,intRating:82},
-  {name:'Weston McKennie',flag:'🇺🇸',club:'Juventus',clubRating:77,intRating:76},
-  {name:'Karim Adeyemi',flag:'🇩🇪',club:'Borussia Dortmund',clubRating:81,intRating:74},
-  {name:'Lamine Yamal',flag:'🇪🇸',club:'Barcelona',clubRating:91,intRating:89},
-];
 
 const ARTICLES = [
   {
@@ -1813,7 +1770,7 @@ function showStatsTab(tab, btn) {
   // Use live API, fall back to hardcoded if it fails
   if(tab==='tables')    fetchAndRenderTables();
   if(tab==='scorers')   fetchAndRenderScorers();
-  if(tab==='teamstats') renderTeamStats();   // team stats = derived from RESULTS (shots/poss not in free API)
+  if(tab==='teamstats') { renderTeamStats(); fetchAndRenderLiveTeamStats(); }
   if(tab==='results')   fetchAndRenderMatches();
 }
 
@@ -1975,6 +1932,52 @@ function renderTeamStats() {
   }).join('');
 }
 
+async function fetchAndRenderLiveTeamStats() {
+  const head = document.getElementById('liveTeamStatsHead');
+  const tbody = document.getElementById('liveTeamStatsBody');
+  if (!head || !tbody) return;
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">⏳ Loading live data…</td></tr>`;
+  try {
+    const data = await fetchOFB();
+    const matches = parseOFB(data).filter(m => m.played);
+    const totals = {};
+    matches.forEach(m => {
+      [[m.home, m.hg, m.ag],[m.away, m.ag, m.hg]].forEach(([name, gf, ga]) => {
+        if (!totals[name]) totals[name] = {name, gp:0, gf:0, ga:0, cs:0, w:0, d:0, l:0};
+        totals[name].gp++;
+        totals[name].gf += gf || 0;
+        totals[name].ga += ga || 0;
+        if ((ga || 0) === 0) totals[name].cs++;
+        if (gf > ga) totals[name].w++;
+        else if (gf === ga) totals[name].d++;
+        else totals[name].l++;
+      });
+    });
+    const list = Object.values(totals).filter(t => t.gp > 0)
+      .sort((a,b) => (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf);
+    head.innerHTML = `<tr><th>Team</th><th>GP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Clean Sheets</th></tr>`;
+    tbody.innerHTML = list.length
+      ? list.map(t => {
+          const flag = Object.values(GROUPS).flatMap(g=>g.teams).find(x=>x.name===t.name)?.flag||'';
+          const gd = t.gf - t.ga;
+          return `<tr>
+            <td>${flag} <strong>${t.name}</strong></td>
+            <td>${t.gp}</td>
+            <td style="color:#16A34A;font-weight:700">${t.w}</td>
+            <td>${t.d}</td>
+            <td style="color:var(--red)">${t.l}</td>
+            <td style="font-weight:800;color:#16A34A">${t.gf}</td>
+            <td style="color:var(--red)">${t.ga}</td>
+            <td style="font-weight:700">${gd > 0 ? '+'+gd : gd}</td>
+            <td>${t.cs}</td>
+          </tr>`;
+        }).join('')
+      : `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--muted)">No matches played yet</td></tr>`;
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:1.5rem;color:var(--muted)">Could not load live data</td></tr>`;
+  }
+}
+
 function renderResults() {
   const grid = document.getElementById('resultsGrid');
   if(!grid) return;
@@ -2103,7 +2106,17 @@ function initCharts() {
       labels: ['Argentina','France','Brazil','England','Spain','Germany','Portugal','Netherlands','Others'],
       datasets: [{
         data: [19,17,14,12,10,8,6,5,9],
-        backgroundColor: ['#E63946','#2563EB','#16A34A','#0A2540','#D97706','#6B7280','#7C3AED','#0891B2','#D1D5DB'],
+        backgroundColor: [
+          '#74ACDF', // Argentina — celeste sky blue
+          '#002395', // France — French blue
+          '#FEDD00', // Brazil — iconic yellow
+          '#CF142B', // England — St George red
+          '#AA151B', // Spain — Spanish red
+          '#1A1A1A', // Germany — black
+          '#006600', // Portugal — Portuguese green
+          '#FF6600', // Netherlands — Dutch orange
+          '#9CA3AF', // Others — grey
+        ],
         borderRadius: 4,
       }]
     },
@@ -2511,33 +2524,6 @@ function runComparison() {
   document.getElementById('cmpNote').textContent = `Overall data edge: ${winner.name} — Scoring & creativity normalised against all players in this dataset. Youth score rewards players under 30.`;
 }
 
-// ─── CLUB FORM ───────────────────────────────────────────────────────────────
-
-function renderForm() {
-  const grid = document.getElementById('formGrid');
-  grid.innerHTML = FORM_DATA.map(p => {
-    const diff = p.intRating - p.clubRating;
-    let verdict, vclass;
-    if (diff >= 8) { verdict = '↑ Better for country'; vclass = 'fv-green'; }
-    else if (diff >= -5) { verdict = '→ Consistent form'; vclass = 'fv-amber'; }
-    else { verdict = '↓ Club form better'; vclass = 'fv-red'; }
-    return `<div class="fc">
-      <div class="fc-top">
-        <span style="font-size:1.3rem">${p.flag}</span>
-        <div><div class="fc-name">${p.name}</div><div class="fc-club">${p.club}</div></div>
-      </div>
-      <div class="form-bar-row">
-        <div class="form-bar-label"><span>Club (last 10)</span><span>${p.clubRating}/100</span></div>
-        <div class="fb-wrap"><div class="fb-fill fb-club" style="width:${p.clubRating}%"></div></div>
-      </div>
-      <div class="form-bar-row">
-        <div class="form-bar-label"><span>International (last 5)</span><span>${p.intRating}/100</span></div>
-        <div class="fb-wrap"><div class="fb-fill fb-int" style="width:${p.intRating}%"></div></div>
-      </div>
-      <span class="form-verdict ${vclass}">${verdict}</span>
-    </div>`;
-  }).join('');
-}
 
 // ─── ARTICLES ────────────────────────────────────────────────────────────────
 
@@ -3004,7 +2990,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTeams();
   renderPlayers();
   populateCompareDropdowns();
-  renderForm();
   renderArticles();
   renderPredictor();
   loadPredState();

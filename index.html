@@ -2036,13 +2036,23 @@ function initLiveStats() {
   fetchAndRenderTables();
 }
 
+const JERSEYS = [
+  {flag:'🇦🇷', name:'Argentina', link:'https://amzn.to/4uCUHb2'},
+  {flag:'🇵🇹', name:'Portugal',  link:'https://amzn.to/4gvOF8C'},
+  {flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', name:'England',   link:'https://www.amazon.co.uk/s?k=England+2026+World+Cup+jersey&tag=simarc12-21'},
+  {flag:'🇧🇷', name:'Brazil',    link:'https://www.amazon.co.uk/s?k=Brazil+2026+World+Cup+jersey&tag=simarc12-21'},
+  {flag:'🇫🇷', name:'France',    link:'https://www.amazon.co.uk/s?k=France+2026+World+Cup+jersey&tag=simarc12-21'},
+  {flag:'🇪🇸', name:'Spain',     link:'https://www.amazon.co.uk/s?k=Spain+2026+World+Cup+jersey&tag=simarc12-21'},
+  {flag:'🇩🇪', name:'Germany',   link:'https://www.amazon.co.uk/s?k=Germany+2026+World+Cup+jersey&tag=simarc12-21'},
+  {flag:'🇲🇽', name:'Mexico',    link:'https://www.amazon.co.uk/s?k=Mexico+2026+World+Cup+jersey&tag=simarc12-21'},
+];
+
 const AFFILIATES = [
-  {icon:'👕',title:'Official Match Jerseys',desc:'Shop authentic World Cup 2026 jerseys for all 48 nations. Official kits from Adidas, Nike and Puma.',comm:'Commission: 4-8% via Amazon Associates',link:'#'},
-  {icon:'📺',title:'Watch Live: Streaming Packages',desc:'Never miss a match. Compare streaming and broadcast packages for full tournament coverage.',comm:'Commission: £5-20 per signup',link:'#'},
-  {icon:'✈️',title:'Match Day Travel & Experiences',desc:'Official hospitality packages, hotels near stadiums, and guided match day experiences across the USA, Canada and Mexico.',comm:'Commission: £15-50 per booking',link:'#'},
-  {icon:'⚽',title:'Fantasy Football & Prediction Games',desc:'Join free-to-enter prediction leagues and paid fantasy platforms with prize pools.',comm:'Commission: £5-15 per signup',link:'#'},
-  {icon:'🏐',title:'Official Match Balls & Equipment',desc:'Replica Adidas Al Rihla match balls, training equipment, and tournament merchandise.',comm:'Commission: 4-6% via Amazon Associates',link:'#'},
-  {icon:'📚',title:'Football Analytics Books',desc:'Recommended reading: The Numbers Game, Soccernomics, The Expected Goals Philosophy.',comm:'Commission: 4-8%',link:'#'},
+  {icon:'🏐',title:'Official Match Ball',desc:'Adidas 2026 World Cup replica match ball — the same ball used on the pitch.',comm:'via Amazon Associates',link:'https://amzn.to/43BGNLp'},
+  {icon:'🎮',title:'EA FC 26 — PS5',desc:'The official football game for PlayStation 5. Pre-order EA FC 26 now.',comm:'via Amazon Associates',link:'https://amzn.to/4vaSG6Z'},
+  {icon:'🎮',title:'EA FC 26 — Xbox',desc:'EA FC 26 for Xbox Series S/X. Pre-order and play from day one.',comm:'via Amazon Associates',link:'https://amzn.to/4eof6dP'},
+  {icon:'📚',title:'Football Analytics Books',desc:'Recommended reading: The Numbers Game, Soccernomics, The Expected Goals Philosophy.',comm:'via Amazon Associates',link:'#'},
+  {icon:'📺',title:'Watch Live: Streaming',desc:'Never miss a match. Compare streaming packages for full 2026 World Cup coverage.',comm:'via affiliate',link:'#'},
 ];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -2970,14 +2980,39 @@ function loadPredState() {
 // ─── AFFILIATES ───────────────────────────────────────────────────────────────
 
 function renderAffiliates() {
-  document.getElementById('affGrid').innerHTML = AFFILIATES.map(a => `
-    <div class="aff-card">
-      <div class="aff-icon">${a.icon}</div>
-      <div class="aff-title">${a.title}</div>
-      <div class="aff-desc">${a.desc}</div>
-      <div class="aff-comm">${a.comm}</div>
-      <a href="${a.link}" class="aff-btn" target="_blank" rel="noopener">View Deals →</a>
-    </div>`).join('');
+  const jerseyHTML = `
+    <div style="margin-bottom:2rem">
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem">👕 Official Jerseys — Shop by Team</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.75rem">
+        ${JERSEYS.map(j => j.link === '#'
+          ? `<div style="background:#F9FAFB;border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;opacity:.5">
+               <div style="font-size:2rem">${j.flag}</div>
+               <div style="font-size:.8rem;font-weight:700;margin:.4rem 0">${j.name}</div>
+               <div style="font-size:.65rem;color:var(--muted)">Coming soon</div>
+             </div>`
+          : `<a href="${j.link}" target="_blank" rel="noopener" style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;text-decoration:none;display:block;transition:box-shadow .2s" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow='none'">
+               <div style="font-size:2rem">${j.flag}</div>
+               <div style="font-size:.8rem;font-weight:700;color:var(--navy);margin:.4rem 0">${j.name}</div>
+               <div style="font-size:.65rem;color:var(--blue);font-weight:600">Shop on Amazon →</div>
+             </a>`
+        ).join('')}
+      </div>
+    </div>`;
+
+  const otherHTML = `
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem">More Essentials</div>
+    <div id="affGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem">
+      ${AFFILIATES.map(a => `
+        <div class="aff-card">
+          <div class="aff-icon">${a.icon}</div>
+          <div class="aff-title">${a.title}</div>
+          <div class="aff-desc">${a.desc}</div>
+          <div class="aff-comm">${a.comm}</div>
+          <a href="${a.link}" class="aff-btn" target="_blank" rel="noopener">${a.link==='#'?'Coming Soon':'Shop Now →'}</a>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('affGrid').outerHTML = jerseyHTML + otherHTML;
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────

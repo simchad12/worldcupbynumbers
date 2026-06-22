@@ -2176,27 +2176,88 @@ function updateCountdown() {
   document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
 }
 
+// ─── WINNER PROBABILITY ALGORITHM ────────────────────────────────────────────
+
+// Historical World Cup pedigree: [wins, finals appearances]
+const PEDIGREE = {
+  'Brazil':5,'Germany':4,'Italy':4,'Argentina':3,'France':2,'Uruguay':2,
+  'England':1,'Spain':1,
+};
+const FINALS = {
+  'Brazil':7,'Germany':8,'Italy':6,'Argentina':6,'France':4,'Uruguay':4,
+  'Netherlands':3,'Czechoslovakia':2,'Hungary':2,'Sweden':1,'Croatia':1,
+  'England':1,'Spain':1,'Portugal':1,
+};
+const TEAM_COLOURS = {
+  'Argentina':'#74ACDF','France':'#002395','Brazil':'#FEDD00','England':'#CF142B',
+  'Spain':'#AA151B','Germany':'#1A1A1A','Portugal':'#006600','Netherlands':'#FF6600',
+  'Belgium':'#EF3340','Morocco':'#C1272D','Uruguay':'#5FFFFF','Croatia':'#FF0000',
+  'Japan':'#BC002D','USA':'#3C3B6E','Mexico':'#006847','Senegal':'#00853F',
+};
+
+function calcWinnerProbs() {
+  // Build flat list of all 48 teams from GROUPS
+  const allTeams = [];
+  Object.values(GROUPS).forEach(g => {
+    g.teams.forEach(t => allTeams.push({name: t.name, rank: t.rank, conf: t.conf}));
+  });
+  const total = allTeams.length;
+
+  // --- Form from played RESULTS ---
+  const pts = {}, gd = {};
+  allTeams.forEach(t => { pts[t.name] = 0; gd[t.name] = 0; });
+  RESULTS.filter(r => r.played && r.hg !== null).forEach(r => {
+    gd[r.home] = (gd[r.home] || 0) + (r.hg - r.ag);
+    gd[r.away] = (gd[r.away] || 0) + (r.ag - r.hg);
+    if (r.hg > r.ag)       { pts[r.home] = (pts[r.home] || 0) + 3; }
+    else if (r.hg === r.ag){ pts[r.home] = (pts[r.home] || 0) + 1; pts[r.away] = (pts[r.away] || 0) + 1; }
+    else                   { pts[r.away] = (pts[r.away] || 0) + 3; }
+  });
+  const hasForm = Object.values(pts).some(p => p > 0);
+  const maxForm = Math.max(...allTeams.map(t => (pts[t.name] || 0) + Math.min(Math.max(gd[t.name] || 0, -5), 5) * 0.2)) || 1;
+
+  // --- Score each team ---
+  const scored = allTeams.map(t => {
+    const rankScore     = (total - t.rank + 1) / total;
+    const pedScore      = ((PEDIGREE[t.name] || 0) * 3 + (FINALS[t.name] || 0)) / ((5 * 3) + 8);
+    const formRaw       = (pts[t.name] || 0) + Math.min(Math.max(gd[t.name] || 0, -5), 5) * 0.2;
+    const formScore     = formRaw / maxForm;
+
+    const W_RANK = 0.40, W_PED = 0.35, W_FORM = 0.25;
+    const composite = hasForm
+      ? W_RANK * rankScore + W_PED * pedScore + W_FORM * formScore
+      : (W_RANK * rankScore + W_PED * pedScore) / (W_RANK + W_PED);
+
+    return {name: t.name, score: composite};
+  });
+
+  // Normalise to 100%
+  const totalScore = scored.reduce((s, t) => s + t.score, 0);
+  scored.forEach(t => t.prob = Math.round((t.score / totalScore) * 1000) / 10);
+  scored.sort((a, b) => b.prob - a.prob);
+
+  // Top 8 + Others
+  const top8   = scored.slice(0, 8);
+  const others = Math.round((100 - top8.reduce((s, t) => s + t.prob, 0)) * 10) / 10;
+  return {
+    labels: [...top8.map(t => t.name), 'Others'],
+    data:   [...top8.map(t => t.prob), others],
+    colours:[...top8.map(t => TEAM_COLOURS[t.name] || '#4B5563'), '#9CA3AF'],
+  };
+}
+
 // ─── CHARTS ──────────────────────────────────────────────────────────────────
 
 function initCharts() {
-  // Winner probability
+  // Winner probability — calculated dynamically
+  const wp = calcWinnerProbs();
   new Chart(document.getElementById('winnerChart'), {
     type: 'bar',
     data: {
-      labels: ['Argentina','France','Brazil','England','Spain','Germany','Portugal','Netherlands','Others'],
+      labels: wp.labels,
       datasets: [{
-        data: [19,17,14,12,10,8,6,5,9],
-        backgroundColor: [
-          '#74ACDF', // Argentina — celeste sky blue
-          '#002395', // France — French blue
-          '#FEDD00', // Brazil — iconic yellow
-          '#CF142B', // England — St George red
-          '#AA151B', // Spain — Spanish red
-          '#1A1A1A', // Germany — black
-          '#006600', // Portugal — Portuguese green
-          '#FF6600', // Netherlands — Dutch orange
-          '#9CA3AF', // Others — grey
-        ],
+        data: wp.data,
+        backgroundColor: wp.colours,
         borderRadius: 4,
       }]
     },

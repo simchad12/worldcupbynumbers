@@ -381,6 +381,12 @@ footer strong{color:rgba(255,255,255,.85)}
     </div>
   </div>
 
+  <!-- Nord affiliate strip -->
+  <div style="background:#1a1a2e;padding:.65rem 1rem;text-align:center;font-size:.78rem;color:rgba(255,255,255,.75);display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap">
+    <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=150804&url_id=902" target="_blank" rel="noopener sponsored" style="color:#74ACDF;white-space:nowrap">🔒 Travelling? Secure your connection with NordVPN →</a>
+    <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=150804&url_id=9356" target="_blank" rel="noopener sponsored" style="color:#74ACDF;white-space:nowrap">🔑 Manage your passwords safely with NordPass →</a>
+  </div>
+
   <div class="container">
     <!-- RESULTS & FIXTURES WIDGET -->
     <div class="sec-hdr" style="padding-top:.5rem">
@@ -464,9 +470,9 @@ footer strong{color:rgba(255,255,255,.85)}
         <div class="sc-desc">Every World Cup winner since 2006 was ranked between 3rd and 8th going in. Not the top seed — who tends to be over-targeted — and not an outsider. Teams in this band carry quality without the expectation burden that comes with being #1.</div>
       </div>
       <div class="stat-card">
-        <div class="sc-num">26.8</div>
-        <div class="sc-title">Average age of winners since 2010</div>
-        <div class="sc-desc">Squads averaging over 29 years consistently underperform their market value in knockout rounds. Physical output drops, injury risk spikes across a compressed tournament schedule, and older squads struggle with the 3-game-in-7-days demand of the group stage.</div>
+        <div class="sc-num">7 / 7</div>
+        <div class="sc-title">The Ballon d'Or factor</div>
+        <div class="sc-desc">Every World Cup winner from 1998–2022 had a player finish in the top 5 of that year's Ballon d'Or — Zidane, Ronaldo, Cannavaro, Xavi, Neuer, Griezmann, Messi. World class individual quality has never been absent from a winning squad. In 2026, that points squarely at Argentina and France.</div>
       </div>
       <div class="stat-card">
         <div class="sc-num">0 / 22</div>
@@ -2120,7 +2126,8 @@ const AFFILIATES = [
   {icon:'🌍',title:'World Cup History',desc:'The complete history of the FIFA World Cup — every tournament, every winner.',comm:'via Amazon Associates',link:'https://amzn.to/4edES5P'},
   {icon:'⭐',title:'Messi — Updated Biography',desc:'The definitive biography of Lionel Messi, updated for his final World Cup.',comm:'via Amazon Associates',link:'https://amzn.to/4aO46Fx'},
   {icon:'🐐',title:'Ronaldo — Updated Biography',desc:'The complete story of Cristiano Ronaldo, updated for the 2026 World Cup.',comm:'via Amazon Associates',link:'https://amzn.to/4vhlBGw'},
-  {icon:'📺',title:'Watch From Anywhere — NordVPN',desc:'Abroad during the World Cup? Access BBC iPlayer and ITV coverage from anywhere in the world with NordVPN.',comm:'via NordVPN affiliate',link:'#'},
+  {icon:'🔒',title:'Watch From Anywhere — NordVPN',desc:'Travelling during the World Cup? NordVPN encrypts your connection and lets you access your home streaming services securely while abroad. 30-day money-back guarantee.',comm:'via NordVPN affiliate',link:'https://go.nordvpn.net/aff_c?offer_id=15&aff_id=150804&url_id=902'},
+  {icon:'🔑',title:'Keep Your Passwords Safe — NordPass',desc:'One secure place for all your passwords, payment details and personal info. Auto-fill logins across every device. Free plan available.',comm:'via NordPass affiliate',link:'https://go.nordpass.io/aff_c?offer_id=488&aff_id=150804&url_id=9356'},
 ];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -2236,13 +2243,12 @@ function calcWinnerProbs() {
   scored.forEach(t => t.prob = Math.round((t.score / totalScore) * 1000) / 10);
   scored.sort((a, b) => b.prob - a.prob);
 
-  // Top 8 + Others
-  const top8   = scored.slice(0, 8);
-  const others = Math.round((100 - top8.reduce((s, t) => s + t.prob, 0)) * 10) / 10;
+  // Top 9 teams
+  const top9 = scored.slice(0, 9);
   return {
-    labels: [...top8.map(t => t.name), 'Others'],
-    data:   [...top8.map(t => t.prob), others],
-    colours:[...top8.map(t => TEAM_COLOURS[t.name] || '#4B5563'), '#9CA3AF'],
+    labels:  top9.map(t => t.name),
+    data:    top9.map(t => t.prob),
+    colours: top9.map(t => TEAM_COLOURS[t.name] || '#4B5563'),
   };
 }
 

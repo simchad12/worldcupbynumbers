@@ -425,7 +425,7 @@ footer strong{color:rgba(255,255,255,.85)}
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Winner Probability — Live Forecast</div>
         <div class="chart-wrap"><canvas id="winnerChart"></canvas></div>
-        <p class="chart-note"><strong>Methodology:</strong> Elo rating (40%) · Historical pedigree — WC wins & finals (35%) · Live tournament form (25%) · Confederation weight applied</p>
+        <p class="chart-note"><strong>Methodology:</strong> Elo rating (55%) · Individual quality — Ballon d'Or (20%) · Live tournament form (20%) · Historical pedigree (5%) · Confederation weight applied</p>
       </div>
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Goals Per Match — Tournament History</div>
@@ -2214,6 +2214,35 @@ const CONF_WEIGHT = {
   'UEFA':1.00,'CONMEBOL':1.00,'CONCACAF':0.82,'AFC':0.83,'CAF':0.87,'OFC':0.78,
 };
 
+// Individual quality — based on current/recent Ballon d'Or standing and squad star power
+const BALLON_DOR = {
+  'Argentina':1.00, // Messi — 7× Ballon d'Or
+  'Brazil':0.95,    // Vinicius Jr — 2024 Ballon d'Or winner
+  'France':0.90,    // Mbappé — serial contender
+  'Spain':0.85,     // Rodri (2024 winner), Lamine Yamal
+  'England':0.80,   // Bellingham
+  'Norway':0.65,    // Haaland — world class, squad limited
+  'Portugal':0.65,  // Ronaldo — former winner
+  'Belgium':0.60,   // De Bruyne
+  'Croatia':0.50,   // Modric — former winner, declining
+  'Germany':0.45,   // Wirtz emerging, no current elite
+  'Netherlands':0.42,
+  'Colombia':0.38,  // Luis Díaz
+  'Morocco':0.32,   // Hakimi
+  'Uruguay':0.28,   // Núñez, Valverde
+  'Japan':0.25,     // Mitoma
+  'Ecuador':0.22,   // Caicedo
+  'Senegal':0.20,   // Sarr, Mendy
+  'Switzerland':0.20,
+  'Sweden':0.18,    // Isak
+  'Mexico':0.18,
+  'USA':0.15,       // Pulisic
+  'Austria':0.15,
+  'Turkey':0.12,
+  'South Korea':0.12,
+  'Australia':0.12,
+};
+
 // Historical World Cup pedigree: wins and finals appearances
 const PEDIGREE = {
   'Brazil':5,'Germany':4,'Italy':4,'Argentina':3,'France':2,'Uruguay':2,
@@ -2254,15 +2283,16 @@ function calcWinnerProbs() {
   // --- Score each team ---
   const scored = allTeams.map(t => {
     const eloScore  = ((ELO[t.name] || 1600) - ELO_MIN) / (ELO_MAX - ELO_MIN);
+    const bdScore   = BALLON_DOR[t.name] || 0.08;
     const pedScore  = ((PEDIGREE[t.name] || 0) * 3 + (FINALS[t.name] || 0)) / ((5 * 3) + 8);
     const formRaw   = (pts[t.name] || 0) + Math.min(Math.max(gd[t.name] || 0, -5), 5) * 0.2;
     const formScore = formRaw / maxForm;
     const confMult  = CONF_WEIGHT[t.conf] || 1.0;
 
-    const W_ELO = 0.40, W_PED = 0.35, W_FORM = 0.25;
+    const W_ELO = 0.55, W_BD = 0.20, W_PED = 0.05, W_FORM = 0.20;
     const base = hasForm
-      ? W_ELO * eloScore + W_PED * pedScore + W_FORM * formScore
-      : (W_ELO * eloScore + W_PED * pedScore) / (W_ELO + W_PED);
+      ? W_ELO * eloScore + W_BD * bdScore + W_PED * pedScore + W_FORM * formScore
+      : (W_ELO * eloScore + W_BD * bdScore + W_PED * pedScore) / (W_ELO + W_BD + W_PED);
 
     return {name: t.name, score: base * confMult};
   });

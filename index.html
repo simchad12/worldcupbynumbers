@@ -425,7 +425,7 @@ footer strong{color:rgba(255,255,255,.85)}
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Winner Probability — Live Forecast</div>
         <div class="chart-wrap"><canvas id="winnerChart"></canvas></div>
-        <p class="chart-note"><strong>Methodology:</strong> Elo rating (50%) · Ballon d'Or 2023–2025 avg, top 3 players per team (20%) · Live tournament form (20%) · Historical pedigree — WC wins & finals (10%) · Confederation weight applied</p>
+        <p class="chart-note"><strong>Methodology:</strong> Elo rating (50%) · Ballon d'Or 2023–2025 avg, top 3 players per team (30%) · Historical pedigree — WC wins & finals (10%) · Live tournament form (10%) · Confederation weight applied</p>
       </div>
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Goals Per Match — Tournament History</div>
@@ -481,7 +481,7 @@ footer strong{color:rgba(255,255,255,.85)}
       <div class="stat-card">
         <div class="sc-num">7 / 7</div>
         <div class="sc-title">The Ballon d'Or factor</div>
-        <div class="sc-desc">Every World Cup winner from 1998–2022 had a player finish in the top 5 of that year's Ballon d'Or — Zidane, Ronaldo, Cannavaro, Xavi, Neuer, Griezmann, Messi. World class individual quality has never been absent from a winning squad. In 2026, that points squarely at Argentina and France.</div>
+        <div class="sc-desc">Every World Cup winner from 1998–2022 had a player finish in the top 5 of that same year's Ballon d'Or — Zidane, Ronaldo, Cannavaro, Xavi, Neuer, Griezmann, Messi. Note: this is a retrospective pattern, not a predictor — the WC win itself influences that vote. The forward-looking question for 2026 is: which squads contain a player likely to contend for the 2026 Ballon d'Or? Mbappé, Vinicius Jr, Yamal and Bellingham are the strongest candidates.</div>
       </div>
       <div class="stat-card">
         <div class="sc-num">0 / 22</div>
@@ -2357,7 +2357,7 @@ function calcWinnerProbs() {
     const formScore = formRaw / maxForm;
     const confMult  = CONF_WEIGHT[t.conf] || 1.0;
 
-    const W_ELO = 0.50, W_BD = 0.20, W_PED = 0.10, W_FORM = 0.20;
+    const W_ELO = 0.50, W_BD = 0.30, W_PED = 0.10, W_FORM = 0.10;
     const base = hasForm
       ? W_ELO * eloScore + W_BD * bdScore + W_PED * pedScore + W_FORM * formScore
       : (W_ELO * eloScore + W_BD * bdScore + W_PED * pedScore) / (W_ELO + W_BD + W_PED);
@@ -2370,12 +2370,12 @@ function calcWinnerProbs() {
   scored.forEach(t => t.prob = Math.round((t.score / totalScore) * 1000) / 10);
   scored.sort((a, b) => b.prob - a.prob);
 
-  // Top 9 teams
-  const top9 = scored.slice(0, 9);
+  // Top 7 teams
+  const top7 = scored.slice(0, 7);
   return {
-    labels:  top9.map(t => t.name),
-    data:    top9.map(t => t.prob),
-    colours: top9.map(t => TEAM_COLOURS[t.name] || '#4B5563'),
+    labels:  top7.map(t => t.name),
+    data:    top7.map(t => t.prob),
+    colours: top7.map(t => TEAM_COLOURS[t.name] || '#4B5563'),
   };
 }
 

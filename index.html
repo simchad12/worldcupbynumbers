@@ -425,7 +425,7 @@ footer strong{color:rgba(255,255,255,.85)}
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Winner Probability — Live Forecast</div>
         <div class="chart-wrap"><canvas id="winnerChart"></canvas></div>
-        <p class="chart-note"><strong>Methodology:</strong> Elo rating (55%) · Individual quality — Ballon d'Or (20%) · Live tournament form (20%) · Historical pedigree (5%) · Confederation weight applied</p>
+        <p class="chart-note"><strong>Methodology:</strong> Elo rating (50%) · Ballon d'Or 2023–2025 avg, top 3 players per team (20%) · Live tournament form (20%) · Historical pedigree — WC wins & finals (10%) · Confederation weight applied</p>
       </div>
       <div class="card">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;font-weight:600">Goals Per Match — Tournament History</div>
@@ -453,7 +453,7 @@ footer strong{color:rgba(255,255,255,.85)}
           </div>
           <div style="display:flex;align-items:flex-start;gap:.75rem">
             <span style="font-size:1.4rem">🌎</span>
-            <div>South America <strong>has</strong> won outside their continent — Brazil 1958 (Sweden), 1970 & 1994 (North America), 2002 (Asia) and Argentina 1986 (Mexico). But in <strong>European-hosted</strong> tournaments, SA has only won once in 11 tries.</div>
+            <div>South America <strong>has</strong> won outside their continent — Brazil won in Sweden (1958), Mexico (1970), USA (1994) and Japan/South Korea (2002); Argentina won in Mexico (1986). But in <strong>European-hosted</strong> tournaments, SA has only won once in 11 tries.</div>
           </div>
           <div style="display:flex;align-items:flex-start;gap:.75rem">
             <span style="font-size:1.4rem">🆕</span>
@@ -1258,7 +1258,7 @@ const ARTICLES = [
 <p>There's also a counter-argument: the rankings themselves are imperfect. They reward consistent qualification football, not knockout-stage performance. A team that dominates CONMEBOL qualifiers builds ranking points through a very different competitive environment than navigating the European Nations League. Argentina's ranking partially reflects South American dominance — not necessarily European or neutral-ground supremacy.</p>
 <h2>The Neutral Ground Factor</h2>
 <p>The idea that South American teams "can't win away from home" is one of football's most repeated myths — and the data flatly contradicts it. Brazil won in Sweden (1958), Mexico (1970), the USA (1994) and South Korea/Japan (2002). Argentina won in Mexico (1986). That's five titles outside South America.</p>
-<p>The real pattern is more specific: in European-hosted tournaments, South America has won just once — Brazil in Sweden, 1958 — in twelve attempts. In South American-hosted tournaments, Europe has never won in five attempts. In CONCACAF-hosted tournaments, South America has an unblemished record: Brazil won in Mexico 1970, Argentina won in Mexico 1986, Brazil won in the USA 1994. Three CONCACAF hosts, three South American winners. That's a striking pattern — and a useful data point for anyone thinking about 2026.</p>
+<p>The real pattern is more specific: in European-hosted tournaments, South America has won just once — Brazil in Sweden, 1958 — in eleven attempts. In South American-hosted tournaments, Europe has won once in five attempts — Germany in Brazil, 2014. In CONCACAF-hosted tournaments, South America has an unblemished record: Brazil won in Mexico 1970, Argentina won in Mexico 1986, Brazil won in the USA 1994. Three CONCACAF hosts, three South American winners. That's a striking pattern — and a useful data point for anyone thinking about 2026.</p>
 <h2>The Investment Case</h2>
 <p>If you were constructing a portfolio of tournament winners using market odds, the data suggests systematically underweighting the #1 ranked team and overweighting the 3rd-7th ranked teams. France, England, Brazil and Spain have all entered tournaments at those rankings. Their historical win conversion is significantly better than their market pricing implies — a genuine inefficiency that persists across cycles.</p>
 <p>None of this means Argentina won't win. They have Messi, arguably the greatest footballer of all time, in what is likely his final tournament. But the data is clear: the favourite rarely delivers. And in 2026, the favourite is wearing the light blue and white stripes of Argentina.</p>`
@@ -1326,7 +1326,7 @@ const ARTICLES = [
 <h2>The Headline Numbers</h2>
 <p>Europe: 12 World Cup wins. South America: 10. Every single World Cup winner across all 22 tournaments has come from one of these two continents. Combined, they account for 100% of victories in the competition's entire history.</p>
 <p>Raw win counts tell part of the story, but venue is the crucial variable. South America's 10 titles: Uruguay 1930 and 1950 (SA), Brazil 1958 (Sweden), 1962 (Chile), 1970 (Mexico), 1994 (USA), 2002 (South Korea/Japan); Argentina 1978 (SA), 1986 (Mexico), 2022 (Qatar). Europe's 12: all won in Europe, North America or Asia. Neither continent has ever won on the other's home soil.</p>
-<blockquote>"In European-hosted tournaments, South America has won just once in twelve attempts (Brazil 1958). In SA-hosted tournaments, Europe has never won in five attempts. In CONCACAF-hosted tournaments, South America has won all three (Brazil 1970, Argentina 1986, Brazil 1994). The data suggests 2026 may actually favour South American sides — though whether that signal still holds with three co-hosts and a 48-team field is a genuine open question."</blockquote>
+<blockquote>"In European-hosted tournaments, South America has won just once in eleven attempts (Brazil 1958). In SA-hosted tournaments, Europe has won once in five attempts (Germany 2014). In CONCACAF-hosted tournaments, South America has won all three (Brazil 1970, Argentina 1986, Brazil 1994). The data suggests 2026 may actually favour South American sides — though whether that signal still holds with three co-hosts and a 48-team field is a genuine open question."</blockquote>
 <h2>What Actually Explains The Pattern?</h2>
 <p>The economic explanation involves the flow of elite talent. Since the 1990s, the best South American players have migrated to European club football at increasingly young ages. Messi spent his formative years at Barcelona. Neymar went to Santos, then PSG. Vinicius developed at Real Madrid. These players live and train in Europe year-round — their physiological adaptation to European conditions is complete.</p>
 <p>But they return to represent their nations in South American qualifiers, where the competitive environment is different: altitude in Bolivia and Ecuador, tropical conditions in Brazil, intense partisan atmospheres across the continent. Their international form is calibrated to those conditions. On neutral ground in North America — a broadly European-standard football environment — their edge is reduced.</p>
@@ -2214,34 +2214,102 @@ const CONF_WEIGHT = {
   'UEFA':1.00,'CONMEBOL':1.00,'CONCACAF':0.82,'AFC':0.83,'CAF':0.87,'OFC':0.78,
 };
 
-// Individual quality — based on current/recent Ballon d'Or standing and squad star power
-const BALLON_DOR = {
-  'Argentina':1.00, // Messi — 7× Ballon d'Or
-  'Brazil':0.95,    // Vinicius Jr — 2024 Ballon d'Or winner
-  'France':0.90,    // Mbappé — serial contender
-  'Spain':0.85,     // Rodri (2024 winner), Lamine Yamal
-  'England':0.80,   // Bellingham
-  'Norway':0.65,    // Haaland — world class, squad limited
-  'Portugal':0.65,  // Ronaldo — former winner
-  'Belgium':0.60,   // De Bruyne
-  'Croatia':0.50,   // Modric — former winner, declining
-  'Germany':0.45,   // Wirtz emerging, no current elite
-  'Netherlands':0.42,
-  'Colombia':0.38,  // Luis Díaz
-  'Morocco':0.32,   // Hakimi
-  'Uruguay':0.28,   // Núñez, Valverde
-  'Japan':0.25,     // Mitoma
-  'Ecuador':0.22,   // Caicedo
-  'Senegal':0.20,   // Sarr, Mendy
-  'Switzerland':0.20,
-  'Sweden':0.18,    // Isak
-  'Mexico':0.18,
-  'USA':0.15,       // Pulisic
-  'Austria':0.15,
-  'Turkey':0.12,
-  'South Korea':0.12,
-  'Australia':0.12,
+// Ballon d'Or rankings — official top 30 per year, players mapped to national team
+// Source: Ballon d'Or official results 2023, 2024, 2025
+const BD_RANKINGS = {
+  2023: [
+    ['Lionel Messi',        'Argentina',  1],
+    ['Erling Haaland',      'Norway',     2],
+    ['Kylian Mbappé',       'France',     3],
+    ['Rodri',               'Spain',      4],
+    ['Kevin De Bruyne',     'Belgium',    5],
+    ['Vinicius Jr',         'Brazil',     6],
+    ['Bernardo Silva',      'Portugal',   7],
+    ['Lautaro Martinez',    'Argentina',  8],
+    ['Harry Kane',          'England',    9],
+    ['Phil Foden',          'England',   10],
+    ['Alexis Mac Allister', 'Argentina', 11],
+    ['Gavi',                'Spain',     12],
+    ['Federico Valverde',   'Uruguay',   13],
+    ['Ilkay Gündogan',      'Germany',   14],
+    ['Achraf Hakimi',       'Morocco',   15],
+    ['Antoine Griezmann',   'France',    16],
+    ['Pedri',               'Spain',     17],
+  ],
+  2024: [
+    ['Rodri',               'Spain',        1],
+    ['Vinicius Jr',         'Brazil',       2],
+    ['Jude Bellingham',     'England',      3],
+    ['Dani Carvajal',       'Spain',        4],
+    ['Kylian Mbappé',       'France',       5],
+    ['Erling Haaland',      'Norway',       6],
+    ['Lamine Yamal',        'Spain',        7],
+    ['Florian Wirtz',       'Germany',      8],
+    ['Granit Xhaka',        'Switzerland', 10],
+    ['Federico Valverde',   'Uruguay',     11],
+    ['Phil Foden',          'England',     12],
+    ['Vitinha',             'Portugal',    13],
+    ['Martin Ødegaard',     'Norway',      14],
+    ['Lautaro Martinez',    'Argentina',   15],
+    ['Pedri',               'Spain',       16],
+    ['Dani Olmo',           'Spain',       17],
+    ['Harry Kane',          'England',     18],
+    ['Alexis Mac Allister', 'Argentina',   19],
+    ['Bernardo Silva',      'Portugal',    20],
+    ['Lionel Messi',        'Argentina',   21],
+    ['Kevin De Bruyne',     'Belgium',     22],
+    ['Luka Modric',         'Croatia',     23],
+    ['Achraf Hakimi',       'Morocco',     24],
+  ],
+  2025: [
+    ['Ousmane Dembélé',     'France',       1],
+    ['Lamine Yamal',        'Spain',        2],
+    ['Vitinha',             'Portugal',     3],
+    ['Mohamed Salah',       'Egypt',        4],
+    ['Raphinha',            'Brazil',       5],
+    ['Achraf Hakimi',       'Morocco',      6],
+    ['Kylian Mbappé',       'France',       7],
+    ['Cole Palmer',         'England',      8],
+    ['Nuno Mendes',         'Portugal',    10],
+    ['Pedri',               'Spain',       11],
+    ['Harry Kane',          'England',     13],
+    ['Viktor Gyökeres',     'Sweden',      15],
+    ['Vinicius Jr',         'Brazil',      16],
+    ['Scott McTominay',     'Scotland',    18],
+    ['João Neves',          'Portugal',    19],
+    ['Lautaro Martinez',    'Argentina',   20],
+    ['Alexis Mac Allister', 'Argentina',   22],
+    ['Jude Bellingham',     'England',     23],
+    ['Fábián Ruiz',         'Spain',       24],
+    ['Denzel Dumfries',     'Netherlands', 25],
+    ['Erling Haaland',      'Norway',      26],
+    ['Declan Rice',         'England',     27],
+    ['Virgil van Dijk',     'Netherlands', 28],
+    ['Florian Wirtz',       'Germany',     29],
+    ['Michael Olise',       'France',      30],
+  ],
 };
+
+// For each WC team: average rank of their players per year, take top 3, convert to 0–1 score
+function calcBDScore(teamName) {
+  const BD_MAX = 30;
+  const playerRanks = {};
+  Object.values(BD_RANKINGS).forEach(yearList => {
+    yearList.forEach(([player, team, rank]) => {
+      if (team === teamName) {
+        if (!playerRanks[player]) playerRanks[player] = [];
+        playerRanks[player].push(rank);
+      }
+    });
+  });
+  if (Object.keys(playerRanks).length === 0) return 0;
+  const avgPerPlayer = Object.values(playerRanks)
+    .map(ranks => ranks.reduce((a,b) => a+b, 0) / ranks.length);
+  avgPerPlayer.sort((a,b) => a-b);
+  const top3 = avgPerPlayer.slice(0, 3);
+  const teamAvg = top3.reduce((a,b) => a+b, 0) / top3.length;
+  return Math.max(0, (BD_MAX + 1 - teamAvg) / BD_MAX);
+}
 
 // Historical World Cup pedigree: wins and finals appearances
 const PEDIGREE = {
@@ -2249,7 +2317,7 @@ const PEDIGREE = {
   'England':1,'Spain':1,
 };
 const FINALS = {
-  'Brazil':7,'Germany':8,'Italy':6,'Argentina':6,'France':4,'Uruguay':4,
+  'Brazil':7,'Germany':8,'Italy':6,'Argentina':6,'France':4,'Uruguay':2,
   'Netherlands':3,'Czechoslovakia':2,'Hungary':2,'Sweden':1,'Croatia':1,
   'England':1,'Spain':1,'Portugal':1,
 };
@@ -2283,13 +2351,13 @@ function calcWinnerProbs() {
   // --- Score each team ---
   const scored = allTeams.map(t => {
     const eloScore  = ((ELO[t.name] || 1600) - ELO_MIN) / (ELO_MAX - ELO_MIN);
-    const bdScore   = BALLON_DOR[t.name] || 0.08;
+    const bdScore   = calcBDScore(t.name);
     const pedScore  = ((PEDIGREE[t.name] || 0) * 3 + (FINALS[t.name] || 0)) / ((5 * 3) + 8);
     const formRaw   = (pts[t.name] || 0) + Math.min(Math.max(gd[t.name] || 0, -5), 5) * 0.2;
     const formScore = formRaw / maxForm;
     const confMult  = CONF_WEIGHT[t.conf] || 1.0;
 
-    const W_ELO = 0.55, W_BD = 0.20, W_PED = 0.05, W_FORM = 0.20;
+    const W_ELO = 0.50, W_BD = 0.20, W_PED = 0.10, W_FORM = 0.20;
     const base = hasForm
       ? W_ELO * eloScore + W_BD * bdScore + W_PED * pedScore + W_FORM * formScore
       : (W_ELO * eloScore + W_BD * bdScore + W_PED * pedScore) / (W_ELO + W_BD + W_PED);
